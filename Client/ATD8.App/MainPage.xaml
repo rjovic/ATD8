@@ -1,0 +1,70 @@
+﻿<Page
+    x:Class="ATD8.App.MainPage"
+    xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+    xmlns:local="using:ATD8.App"
+    xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+    xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
+    xmlns:converter="using:ATD8.App.Converter"
+    mc:Ignorable="d"
+    DataContext="{Binding Source={StaticResource Locator}, Path=Main}">
+
+    <Page.Resources>
+        <converter:BoolToColorConverter x:Name="BoolToColor" />
+
+        <DataTemplate x:Key="TodoTemplate">
+            <Grid HorizontalAlignment="Left" Width="250" Height="250">
+                <Border Background="{Binding IsDone, Converter={StaticResource BoolToColor}}">
+                </Border>
+                <StackPanel>
+                    <TextBlock Text="{Binding Task}" Foreground="{StaticResource ListViewItemOverlayForegroundThemeBrush}"  TextWrapping="Wrap" Margin="20" Height="160"/>
+                    <StackPanel Orientation="Horizontal" Height="40" VerticalAlignment="Bottom" Margin="20,0,20,0">
+                        <Button Content="Delete" Command="{Binding Path=DataContext.DeleteTodoCommand, ElementName=todoGrid}" CommandParameter="{Binding}" Width="100"/>
+                        <Button Content="Edit" Command="{Binding Path=DataContext.EditTodoCommand, ElementName=todoGrid}" CommandParameter="{Binding}" Width="100"/>
+                    </StackPanel>
+                </StackPanel>
+            </Grid>
+        </DataTemplate>
+    </Page.Resources>
+
+    <Grid Background="{StaticResource ApplicationPageBackgroundThemeBrush}">
+
+        <Grid.ColumnDefinitions>
+            <ColumnDefinition Width="*" />
+            <ColumnDefinition Width="600" />
+        </Grid.ColumnDefinitions>
+
+        <ProgressBar IsIndeterminate="{Binding IsWorking}" VerticalAlignment="Top" Foreground="DarkGreen" Background="{x:Null}"/>
+        <Button Content="New todo" Command="{Binding ShowCrudGridCommand}" VerticalAlignment="Top" Margin="20,20,0,0" Width="180" />
+
+        <GridView
+            x:Name="todoGrid"
+            ItemsSource="{Binding Todoes}"
+            ItemTemplate="{StaticResource TodoTemplate}"
+            Margin="20,80,0,0"/>
+
+        <Grid Grid.Column="1"  Visibility="{Binding ShowCrudGrid}" Background="DarkGreen">
+
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition Width="180" />
+                <ColumnDefinition Width="380" />
+            </Grid.ColumnDefinitions>
+
+            <Grid.RowDefinitions>
+                <RowDefinition Height="50" />
+                <RowDefinition Height="150" />
+                <RowDefinition Height="50" />
+                <RowDefinition Height="100" />
+            </Grid.RowDefinitions>
+
+            <TextBlock Text="Task" FontSize="18" VerticalAlignment="Top" Grid.Row="1" Margin="20,0,0,0"/>
+            <TextBlock Text="Status" FontSize="18" Grid.Row="2"  VerticalAlignment="Top" Margin="20,15,0,0"/>
+
+            <TextBox Grid.Row="1" Grid.Column="1" Margin="0,0,0,10" Text="{Binding SelectedTodo.Task, Mode=TwoWay}"/>
+            <ToggleSwitch Grid.Row="2" Grid.Column="1" IsOn="{Binding SelectedTodo.IsDone, Mode=TwoWay}" OnContent="Done" OffContent="Undone"/>
+
+            <Button Content="Save!" Grid.Row="3" Grid.Column="1" HorizontalAlignment="Stretch" VerticalAlignment="Center" Command="{Binding CrudTodoCommand}"/>
+
+        </Grid>
+    </Grid>
+</Page>
